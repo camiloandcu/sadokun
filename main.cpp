@@ -53,11 +53,11 @@ void accederSudoku(Sudoku &sudo)
         cout << endl;
         sudo.mostrarTabla();
         cout << endl;
-        cout << "1. Resetear la tabla" << endl;
-        cout << "2. Cambiar la tabla" << endl;
-        cout << "3. Generar una tabla" << endl;
-        cout << "4. Jugar esta tabla" << endl;
-        cout << "5. Solucionar tabla" << endl;
+        cout << "1. Resetear el sudoku" << endl;
+        cout << "2. Cambiar alguna casilla" << endl;
+        cout << "3. Generar nuevo Sudoku" << endl;
+        cout << "4. Jugar contra alguien" << endl;
+        cout << "5. Mostrar solucion" << endl;
         cout << "6. Regresar" << endl;
         cin >> opt;
 
@@ -126,7 +126,15 @@ void jugarTabla(Sudoku &sudo)
 
 void solucionarTabla(Sudoku &sudo)
 {
-
+    if(sudo.estaSolucionado())
+        sudo.mostrarTablaSol();
+    else{
+        if(sudo.solucionarTabla())
+            sudo.mostrarTablaSol();
+        else
+            cout << "La tabla no tiene solucion";
+    }
+    cout << endl;
 }
 
 void generarTabla(Sudoku &sudo)

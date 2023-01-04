@@ -1,9 +1,9 @@
 #ifndef HELPERFUNC_H_INCLUDED
 #define HELPERFUNC_H_INCLUDED
 
-#include <iostream>
 #include <algorithm>
-#include "Sudoku.hpp"
+#include <stdlib.h>
+#include <time.h>
 
 using namespace std;
 
@@ -15,12 +15,15 @@ array<char, N> caracts = {'1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B',
 
 int genRand(int limiteMax)
 {
+    srand(time(0));
     return rand()%limiteMax;
 }
 
-//TODO: Barajar Array = random_shuffle()
-//TODO: Copiar Array = copy()
-
+/*
+        genRandPos es una función que genera un array
+        con números del 1-144 en una posición aleatoria
+        que describen una posicion en la matriz del sudoku
+*/
 void genRandPos(array<int, N*N> &pos)
 {
     for(int i = 0; i < N*N; i++)
@@ -28,6 +31,11 @@ void genRandPos(array<int, N*N> &pos)
     random_shuffle(begin(pos), end(pos), genRand);
 }
 
+/*
+    Revisa toda la tabla y por medio de referencias almacena el valor de
+    la fila y columna del primer espacio vacio que encuentre, además de
+    devolver un verdadero si encontró un espacio vacio.
+*/
 bool HallarVacio(array<array<char, N>, N> tabla, int &fil, int &col)
 {
     for(fil = 0; fil < N; fil++)
@@ -37,8 +45,6 @@ bool HallarVacio(array<array<char, N>, N> tabla, int &fil, int &col)
     return false;
 }
 
-
-
 bool UsadoFil(array<array<char, N>, N> tabla, int fil, char car)
 {
     for(int col = 0; col < N; col++)
@@ -47,9 +53,25 @@ bool UsadoFil(array<array<char, N>, N> tabla, int fil, char car)
     return false;
 }
 
+bool UsadoFil(array<array<char, N>, N> tabla, int fil, char car, int &col)
+{
+    for(col = 0; col < N; col++)
+        if(tabla[fil][col] == car)
+            return true;
+    return false;
+}
+
 bool UsadoCol(array<array<char, N>, N> tabla, int col, char car)
 {
     for(int fil = 0; fil < N; fil++)
+        if(tabla[fil][col] == car)
+            return true;
+    return false;
+}
+
+bool UsadoCol(array<array<char, N>, N> tabla, int col, char car, int &fil)
+{
+    for(fil = 0; fil < N; fil++)
         if(tabla[fil][col] == car)
             return true;
     return false;
@@ -64,17 +86,45 @@ bool UsadoCaj(array<array< char, N>, N> tabla, int inicioFila, int inicioCol, ch
     return false;
 }
 
+bool UsadoCaj(array<array< char, N>, N> tabla, int inicioFila, int inicioCol, char car, int &fil, int &col)
+{
+    for(fil = 0; fil < MAX_FIL; fil++)
+        for(col = 0; col < MAX_COL; col++)
+            if(tabla[inicioFila + fil][inicioCol + col] == car)
+                return true;
+    return false;
+}
+
+/*
+    Revisa si el espacio es vacio y el caracter no esta ya en
+    la fila, columna o en la caja 3x4 del espacio
+    en el que queremos asignarlo
+*/
 bool esSeguro(array<array<char, N>, N> tabla, int fil, int col, char car)
 {
-    /* Revisa si el espacio es vacio y el caracter no esta ya en
-    la fila, columna o en la caja 3x4 del espacio
-    en el que queremos asignarlo*/
     return !UsadoFil(tabla, fil, car)
            && !UsadoCol(tabla, col, car)
            && !UsadoCaj(tabla, fil - fil % MAX_FIL, col - col % MAX_COL, car)
            && tabla[fil][col] == VACIO;
 }
 
+/*
+    Revisa el caracter no esta ya en la fila, columna o
+    en la caja 3x4 del espacio en el que queremos asignarlo
+    y devuelve valores de fila y columna del valor con el que tiene conflicto
+    por medio de referencias.
+*/
+bool esPosible(array<array<char, N>, N> tabla, int &fil, int &col, char car)
+{
+    return !UsadoFil(tabla, fil, car, col)
+           && !UsadoCol(tabla, col, car, fil)
+           && !UsadoCaj(tabla, fil - fil % MAX_FIL, col - col % MAX_COL, car, fil, col);
+}
+
+/*
+    llenarDiagionales() llena los rectangulos 3x4 que no generarán conflicto
+    entre ellos mismos ya que no comparten filas ni columnas
+*/
 void llenarDiagonales(array<array<char, N>, N> &tabla)
 {
     int inicCol, inicFil;
@@ -90,22 +140,6 @@ void llenarDiagonales(array<array<char, N>, N> &tabla)
         for(int i = 0; i < 3; i++)
             for(int j = 0; j < 4; j++)
                 tabla[inicFil + i][inicCol + j] = randCaracts[i*4 + j];
-    }
-}
-
-void imprimirTabla(array<array<char, N>, N> tabla)
-{
-    for(int i = 0; i < N; i++)
-    {
-        for(int j=0; j < N; j++)
-        {
-            if(tabla[i][j] == 0)
-                cout<<" ";
-            else
-                cout<< tabla[i][j];
-            cout<<"|";
-        }
-        cout<<endl;
     }
 }
 
@@ -129,30 +163,5 @@ void contarSoluciones(array<array<char, N>, N> tabla, int &cont)
         tabla[fil][col] = VACIO;
     }
 }
-
-void contarSoluciones(array<array<char, N>, N> tabla, int &cont, char excl)
-{
-    imprimirTabla(tabla);
-    int fil, col;
-
-    if(!HallarVacio(tabla, fil, col))
-        cont++;
-
-    for(char car : caracts)
-    {
-        cout << fil << " " << col << " " << car << endl;
-        if(cont > 2)
-            break;
-
-        if(car != excl && esSeguro(tabla, fil, col, car))
-        {
-            tabla[fil][col] = car;
-            contarSoluciones(tabla, cont, excl);
-        }
-
-        tabla[fil][col] = VACIO;
-    }
-}
-
 
 #endif // HELPERFUNC_H_INCLUDED
