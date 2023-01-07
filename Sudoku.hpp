@@ -15,10 +15,13 @@ public:
     void mostrarTabla();
     void mostrarTablaSol();
     void cambiarTabla(int fil, int col, char car);
-    bool solucionarTabla();
     void generarTabla(int dific);
     void resetearTabla();
+    bool caracterCorrecto(int fil, int col, char car);
+    bool solucionarTabla();
     bool estaSolucionado();
+    bool tablaTerminada();
+    bool esCasillaVacia(int fil, int col);
 
 
 private:
@@ -44,9 +47,33 @@ bool Sudoku::estaSolucionado()
     return this->solucionado;
 }
 
+bool Sudoku::tablaTerminada()
+{
+    return !HallarVacio(this->tabla);
+}
+
+/*
+    caracterCorrecto revisa si el caracter que se ha seleccionado
+    hace parte de la solucion del sudoku
+*/
+bool Sudoku::caracterCorrecto(int fil, int col, char car)
+{
+    if(car == this->tablaSol[fil][col])
+    {
+        this->tabla[fil][col] = car;
+        return true;
+    }
+    else    
+        return false;
+}
+
+bool Sudoku::esCasillaVacia(int fil, int col)
+{
+    return this->tabla[fil][col] == VACIO;
+}
 /*
     Mostrar tabla permite imprimir la tabla con los caracteres previamente guardados
-    e interpretar los ceros como espacios vacios en el sudoku.
+    e interpretar los ceros como casillas vacias en el sudoku.
 */
 void Sudoku::mostrarTabla()
 {
@@ -78,7 +105,7 @@ void Sudoku::mostrarTablaSol()
 }
 
 /*
-    Resetear tabla permite asignar ceros a cada espacio del sudoku
+    Resetear tabla permite asignar ceros a cada casilla del sudoku
     para así tener una tabla completamente vacia.
 */
 void Sudoku::resetearTabla()
@@ -119,8 +146,8 @@ bool Sudoku::solucionarTabla()
 }
 
 /*
-    Generar tabla permite generar un Sudoku jugable con sus espacios
-    vacios generados a partir del parametro de dificultad que sea pasado
+    Generar tabla permite generar un Sudoku jugable con sus casillas
+    vacias generados a partir del parametro de dificultad que sea pasado
     al método.
 */
 void Sudoku::generarTabla(int dific)
@@ -156,8 +183,8 @@ void Sudoku::generarTabla(int dific)
 //      --FUNCIONES PRIVADAS--
 
 /*
-    generarVacios es un método que tiene como parametros un minimo y un máximo de espacios
-    vacios y que a partir de esto aleatoriamente en la tabla elimina espacios y verifica
+    generarVacios es un método que tiene como parametros un minimo y un máximo de casillas
+    vacias, a partir de esto aleatoriamente en la tabla elimina casillas y verifica
     que la tabla siga siendo solucionable y tenga solo una solución para mantener las reglas
     del Sudoku.
 */
@@ -201,7 +228,7 @@ bool Sudoku::resolverSudoku(array<array< char, N>, N> tabla)
 {
     int fil, col;
 
-    // Si no hay espacios vacios, está resuelto
+    // Si no hay casillas vacias, está resuelto
     if(!HallarVacio(tabla, fil, col)){
         copy(begin(tabla), end(tabla), begin(this->tablaSol));
         this->solucionado = true;
@@ -211,7 +238,7 @@ bool Sudoku::resolverSudoku(array<array< char, N>, N> tabla)
     // Revisar cada caracter disponible
     for(char car : caracts)
     {
-        // Revisar si es seguro asignarlo al espacio
+        // Revisar si es seguro asignarlo a la casilla
         if(esSeguro(tabla, fil, col, car))
         {
 

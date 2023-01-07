@@ -20,9 +20,9 @@ int genRand(int limiteMax)
 }
 
 /*
-        genRandPos es una función que genera un array
-        con números del 1-144 en una posición aleatoria
-        que describen una posicion en la matriz del sudoku
+    genRandPos es una función que genera un array
+    con números del 1-144 en una posición aleatoria
+    que describen una posicion en la matriz del sudoku
 */
 void genRandPos(array<int, N*N> &pos)
 {
@@ -33,13 +33,21 @@ void genRandPos(array<int, N*N> &pos)
 
 /*
     Revisa toda la tabla y por medio de referencias almacena el valor de
-    la fila y columna del primer espacio vacio que encuentre, además de
-    devolver un verdadero si encontró un espacio vacio.
+    la fila y columna de la primer casilla vacia que encuentre.
 */
 bool HallarVacio(array<array<char, N>, N> tabla, int &fil, int &col)
 {
     for(fil = 0; fil < N; fil++)
         for(col = 0; col < N; col++)
+            if(tabla[fil][col] == VACIO)
+                return true;
+    return false;
+}
+
+bool HallarVacio(array<array<char, N>, N> tabla)
+{
+    for(int fil = 0; fil < N; fil++)
+        for(int col = 0; col < N; col++)
             if(tabla[fil][col] == VACIO)
                 return true;
     return false;
@@ -96,8 +104,8 @@ bool UsadoCaj(array<array< char, N>, N> tabla, int inicioFila, int inicioCol, ch
 }
 
 /*
-    Revisa si el espacio es vacio y el caracter no esta ya en
-    la fila, columna o en la caja 3x4 del espacio
+    Revisa si la casilla esta vacia y el caracter no esta ya en
+    la fila, columna o en la caja 3x4 de la casilla
     en el que queremos asignarlo
 */
 bool esSeguro(array<array<char, N>, N> tabla, int fil, int col, char car)
@@ -110,7 +118,7 @@ bool esSeguro(array<array<char, N>, N> tabla, int fil, int col, char car)
 
 /*
     Revisa el caracter no esta ya en la fila, columna o
-    en la caja 3x4 del espacio en el que queremos asignarlo
+    en la caja 3x4 de la casilla en el que queremos asignarlo
     y devuelve valores de fila y columna del valor con el que tiene conflicto
     por medio de referencias.
 */

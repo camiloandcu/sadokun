@@ -9,6 +9,7 @@ void cambiarTabla(Sudoku &sudo);
 void jugarTabla(Sudoku &sudo);
 void solucionarTabla(Sudoku &sudo);
 void generarTabla(Sudoku &sudo);
+bool correctoTabla(Sudoku &sudo);
 
 int main()
 {
@@ -121,7 +122,48 @@ void cambiarTabla(Sudoku &sudo)
 
 void jugarTabla(Sudoku &sudo)
 {
+    if(!sudo.estaSolucionado())
+        if(!sudo.solucionarTabla())
+        {
+            cout << "No se puede jugar esta tabla ya que no tiene solucion" << endl;
+            return ;
+        }
+    
+    bool turnoUno = true;
+    int puntajeUno = 0, puntajeDos = 0;
+    while(!sudo.tablaTerminada())
+    {
+        if(turnoUno)
+        {
+            cout << "\tTurno del Jugador1: " << endl;
+            if(correctoTabla(sudo))
+                puntajeUno++;
+            else
+            {
+                turnoUno = false;
+                cout << "Puntaje Jugador1: " << puntajeUno << endl << endl;
+            }
+        }
+        else
+        {
+            cout << "\tTurno del Jugador2: " << endl;
+            if(correctoTabla(sudo))
+                puntajeDos++;
+            else {
+                turnoUno = true;
+                cout << "Puntaje Jugador2: " << puntajeDos << endl << endl;
+            }
+        }
+    }
 
+    if(puntajeUno > puntajeDos)
+        cout << "Ganador: Jugador1";
+    else if(puntajeDos > puntajeUno)
+        cout << "Ganador: Jugador2";
+    else
+        cout << "Empate";
+
+    cout << endl;
 }
 
 void solucionarTabla(Sudoku &sudo)
@@ -149,4 +191,37 @@ void generarTabla(Sudoku &sudo)
         cin >> dif;
     }while(!(dif >= 0 && dif <= 3));
     sudo.generarTabla(dif);
+}
+
+bool correctoTabla(Sudoku &sudo)
+{
+    int fil, col;
+    char car; 
+    sudo.mostrarTabla();
+    cout << endl;
+    do{
+        do
+        {
+            cout << "Fila: ";
+            cin >> fil;
+            fil--;
+        }while(!(fil >= 0 && fil <= 11));
+        do
+        {
+            cout << "Columna: ";
+            cin >> col;
+            col--;
+        }while(!(col >= 0 && col <= 11));
+        
+        if(!sudo.esCasillaVacia(fil, col))
+            cout << "La casilla seleccionada no esta vacia." << endl;
+    }while(!sudo.esCasillaVacia(fil,col));
+    
+    do
+    {
+        cout << "Caracter: ";
+        cin >> car;
+    }while(!letraValida(car));
+
+    return sudo.caracterCorrecto(fil, col, car);
 }
