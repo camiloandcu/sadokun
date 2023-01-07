@@ -14,3 +14,16 @@ Implementamos la función recursiva resolverSudoku() que funciona usando el back
 6. Si llega a un punto en el que no hay más casillas para completar y se han cumplido todas las reglas del sudoku, se ha encontrado la solución.
 7. Si llega a un punto en el que no hay más casillas para completar pero las reglas del sudoku no se han cumplido, vuelva a la última casilla que llenó e intenta con el siguiente número.
 8. Si llega a un punto en el que no hay más casillas para completar ni más números para probar, no hay solución y se debe retroceder.
+
+## Generador
+El generador consiste en 3 sencillos pasos.
+
+1. Rellenar rectangulos 3x4 que estén ubicados diagonalmente (ya que no generarán problemas, al no compartir filas ni columnas) para ser usado como seed.
+2. Resolver el Sudoku que resulte del paso 1 usando el mismo método de Backtracking mencionado anteriormente.
+3. Vaciar el numero de casillas que se quiera por medio de un ciclo, comprobando en cada iteración que el número de soluciones siempre sea 1: si no lo es, volver a rellenar la casilla y seguir con el ciclo.
+
+## Archivos
+
+* main.cpp: interfaz usada para interactuar con el usuario.
+* Sudoku.hpp: header en el que se implementa la clase de Sudoku y una función requerida en el main.
+* HelperFunc.hpp: header en el que se implementan algunas constantes usadas y funciones que son necesarias en la clase Sudoku, pero no requieren acceso directo al objeto (this).
