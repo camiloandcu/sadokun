@@ -1,6 +1,7 @@
 #ifndef HELPERFUNC_H_INCLUDED
 #define HELPERFUNC_H_INCLUDED
 
+#include <array>
 #include <algorithm>
 #include <stdlib.h>
 #include <time.h>
